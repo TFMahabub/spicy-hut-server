@@ -11,7 +11,7 @@ app.use(cors())
 app.use(express.json())
 
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.tukbsww.mongodb.net/?retryWrites=true&w=majority`;
+const uri = process.env.DB_URI
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 
@@ -25,10 +25,10 @@ async function Products(){
         const result  = await cursor.toArray()
         res.send(result)
       })
-      app.get('/menus', async(req, res)=>{
+      app.get('/popular-menus', async(req, res)=>{
         const query = {};
-        const cursor  = await ProductsCollection.find(query)
-        const result  = await cursor.toArray()
+        const cursor  = await ProductsCollection.find().sort({publishedAt: 1})
+        const result  = (await cursor.toArray()).slice(0, 8)
         res.send(result)
       })
       
